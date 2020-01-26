@@ -7,7 +7,9 @@ import java.util.Random;
 
 import game.GamePanel;
 import game.entities.Entity;
+import game.entities.creatures.Alien;
 import game.entities.creatures.Enemy;
+import game.entities.creatures.EpilepticAlien;
 import game.entities.creatures.Player;
 import game.entities.creatures.stats.Stat;
 import game.entities.creatures.stats.StatBar;
@@ -43,22 +45,19 @@ public class Scene0 extends Scene {
 		backgroundImage = initBackground();
 
 		Stats playerStats = new Stats (
-				new Stat("HEALTH", 100),
-				new Stat("MOVE_SPEED", 4),
-				new Stat("ATTACK_SPEED", 15),
+				new Stat("HEALTH", 300),
+				new Stat("MOVE_SPEED", 5),
+				new Stat("ATTACK_SPEED", 16),
 				new Stat("ATTACK_POWER", 300),
 				new Stat("INVINCIBLE_TIME", 100)
 		);
 		player = new Player(new Vector2D(50, 520), new Vector2D(64, 64), playerStats);
-
 		player.getHitBox().setOffset(20, 0, -40, 0);
 		player.setSprite("resources/sprites/spaceship.png");
-		// PROBLEM HERE
 		player.addStatBar("HEALTH", 200, 20);
 		player.getStatBar("HEALTH").setMode(StatBar.FIXED_POSITION, new Vector2D(20, 20));
 		player.getStatBar("HEALTH").setBack(Color.RED);
 		for (StatBar sb : player.getStatBars()) uis.add(sb);
-		//
 		entities.add(player);
 
 		spawnTimer = 0;
@@ -103,7 +102,7 @@ public class Scene0 extends Scene {
 	}
 
 	private BufferedImage initBackground() {
-		BufferedImage img = new BufferedImage(100, 75, BufferedImage.TYPE_INT_ARGB);
+		BufferedImage img = new BufferedImage(200, 150, BufferedImage.TYPE_INT_ARGB);
 
 		Color backgroundColor = new Color(18, 17, 37);
 		Color starColor = new Color(192, 201, 255);
@@ -162,16 +161,25 @@ public class Scene0 extends Scene {
 		if(spawnTimer >= spawnCooldown) {
 			Random rand = new Random();
 			int size = RandomUtil.getRandom(40, 100);
-			LogSystem.log(Integer.toString(size * 4));
 			Stats enemyStats =
 							new Stats(new Stat("HEALTH", size * 4)
-							, new Stat("MOVE_SPEED", 3)
-							, new Stat("ATTACK_SPEED", 25 + (killCounter /1))
+							, new Stat("MOVE_SPEED", 2 + (killCounter >= 20 ? 1 : 0))
 							, new Stat("ATTACK_POWER", (int) ((double) size / 3)));
-			int x = RandomUtil.getRandom(size, GamePanel.width - size);
-			Enemy enemy = new Enemy(new Vector2D(x, -30), new Vector2D(size, size), enemyStats);
+
+			int alienSelect = RandomUtil.getRandom(0, 50);
+			int x = RandomUtil.getRandom(size / 2, GamePanel.width - (size / 2));
+			Enemy enemy;
+			if (alienSelect == 1) {
+				size *= 2;
+				x = RandomUtil.getRandom(size / 2, GamePanel.width - (size / 2));
+				enemyStats.get("HEALTH").initial = size * 8;
+				enemyStats.get("HEALTH").current = size * 8;
+				enemy = new EpilepticAlien(new Vector2D(x, -size), new Vector2D(size, size), enemyStats);
+			}
+			else enemy = new Alien(new Vector2D(x, -size), new Vector2D(size, size), enemyStats);
+
 			enemy.setSprite("resources/sprites/alien.png");
-			enemy.getHitBox().setOffset(15, 15, -30, -30);
+			enemy.getHitBox().setOffset(size/4 - 4, size/4, -size/2 + (size/8), -size/2 + (size/20));
 			entities.add(enemy);
 			spawnTimer = 0;
 		}
@@ -183,6 +191,7 @@ public class Scene0 extends Scene {
 //			song.playMusic("resources/music/death_by_glamour.wav");
 //		}
 
+		// GAME OVER
 		if (player.getStats().get("HEALTH").current <= 0) {
 			song.stop();
 			song = null;

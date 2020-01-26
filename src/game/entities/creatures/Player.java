@@ -36,7 +36,7 @@ public class Player extends Creature {
 
         // SHOOT
         if(timer <= 0) {
-            if(key.arrowUp.down || key.space.down) {
+            if(key.arrowUp.down || key.space.down || mouse.pressed) {
                 SceneManager.currentScene.entities.add(
                         new Projectile(
                                 new Vector2D(pos.x + (size.x / 2) - 2

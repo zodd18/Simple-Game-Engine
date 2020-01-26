@@ -13,6 +13,7 @@ public class MouseHandler implements MouseListener, MouseMotionListener {
 	private static int mouseB = -1;
 
 	public int clicked = -1;
+	public boolean pressed = false;
 
 	public MouseHandler(GamePanel game) {
 		game.addMouseListener(this);
@@ -66,6 +67,7 @@ public class MouseHandler implements MouseListener, MouseMotionListener {
 		if (clicked == -1) {
 			clicked = 0;
 		}
+		pressed = true;
 	}
 
 	@Override
@@ -76,6 +78,7 @@ public class MouseHandler implements MouseListener, MouseMotionListener {
 			clicked = 1;
 		}
 		mouseB = -1;
+		pressed = false;
 	}
 
 	public boolean mouseAtLeftSide() {
