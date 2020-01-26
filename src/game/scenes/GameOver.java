@@ -27,7 +27,9 @@ public class GameOver extends Scene {
 
 	@Override
 	public void input(MouseHandler mouse, KeyHandler key) {
-		// TODO Auto-generated method stub
+		if (key.enter.down) {
+			SceneManager.currentScene = new Scene0(gsm);
+		}
 
 	}
 
@@ -39,5 +41,6 @@ public class GameOver extends Scene {
 
 		GraphicsUtil.drawCenteredString(g, "GAME OVER", new Rectangle(0, 0, GamePanel.width, GamePanel.height - 200), new Font("Arial", Font.PLAIN, 100));
 		GraphicsUtil.drawCenteredString(g, "Kills: " + Integer.toString(kills), new Rectangle(0, 0, GamePanel.width, (int) (GamePanel.height * 1.5 - 200)), new Font("Arial", Font.PLAIN, 50));
+		GraphicsUtil.drawCenteredString(g, "Press ENTER to try again!", new Rectangle(0, 0, GamePanel.width, (int) (GamePanel.height * 2 - 200)), new Font("Arial", Font.PLAIN, 20));
 	}
 }

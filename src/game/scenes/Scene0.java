@@ -32,7 +32,7 @@ public class Scene0 extends Scene {
 
 	private BufferedImage backgroundImage;
 
-	private int backgroundTransitionCooldown = 30;
+	private int backgroundTransitionCooldown = 6;
 	private int backgroundTransitionTimer;
 
 	AudioLine song;
@@ -44,7 +44,7 @@ public class Scene0 extends Scene {
 
 		Stats playerStats = new Stats (
 				new Stat("HEALTH", 100),
-				new Stat("MOVE_SPEED", 3),
+				new Stat("MOVE_SPEED", 4),
 				new Stat("ATTACK_SPEED", 15),
 				new Stat("ATTACK_POWER", 300),
 				new Stat("INVINCIBLE_TIME", 100)
@@ -82,6 +82,11 @@ public class Scene0 extends Scene {
 		for (Entity e : entities) e.render(g);
 
 		// UI
+		g.setColor(Color.BLACK);
+		g.fillRect(726, 4, 64, 40);
+		g.setColor(new Color(255, 0, 151));
+		g.drawRect(726, 4, 64, 40);
+		g.setFont(new Font("", Font.PLAIN, 12));
 		g.setColor(new Color(255, 0, 151));
 		g.drawString("FPS: " + Integer.toString(GamePanel.oldFrameCount), 730, 40);
 		g.setColor(new Color(255, 0, 151));
@@ -115,15 +120,21 @@ public class Scene0 extends Scene {
 	}
 
 	private void renderBackground() {
+		if (killCounter < 10) backgroundTransitionCooldown = 5;
+		else if (killCounter < 20) backgroundTransitionCooldown = 3;
+		else if (killCounter < 50) backgroundTransitionCooldown = 2;
+		else if (killCounter < 100) backgroundTransitionCooldown = 1;
+		else backgroundTransitionCooldown = 0;
+
 		Color backgroundColor = new Color(18, 17, 37);
 		Color starColor = new Color(192, 201, 255);
 
-//		for (int i = 0; i < backgroundImage.getHeight() - 1; i++) {
-//			for (int j = 0; j < backgroundImage.getWidth(); j++) {
-//				int rgb = backgroundImage.getRGB(j, i);
-//				backgroundImage.setRGB(j, i + 1, rgb);
-//			}
-//		}
+		for (int i = backgroundImage.getHeight() - 1; i > 0; i--) {
+			for (int j = backgroundImage.getWidth() - 1; j >= 0; j--) {
+				int rgb = backgroundImage.getRGB(j, i);
+				backgroundImage.setRGB(j, i, backgroundImage.getRGB(j, i - 1));
+			}
+		}
 
 		for (int k = 0; k < backgroundImage.getWidth(); k++) {
 			int r = RandomUtil.getRandom(0, 100);
@@ -155,7 +166,7 @@ public class Scene0 extends Scene {
 			Stats enemyStats =
 							new Stats(new Stat("HEALTH", size * 4)
 							, new Stat("MOVE_SPEED", 3)
-							, new Stat("ATTACK_SPEED", 25)
+							, new Stat("ATTACK_SPEED", 25 + (killCounter /1))
 							, new Stat("ATTACK_POWER", (int) ((double) size / 3)));
 			int x = RandomUtil.getRandom(size, GamePanel.width - size);
 			Enemy enemy = new Enemy(new Vector2D(x, -30), new Vector2D(size, size), enemyStats);
